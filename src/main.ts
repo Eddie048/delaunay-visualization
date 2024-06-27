@@ -1,6 +1,25 @@
 const canvas = <HTMLCanvasElement>document.getElementById("canvas");
 const ctx = <CanvasRenderingContext2D>canvas.getContext("2d");
 
+const mouse = {
+  x: 0,
+  y: 0,
+  click: false,
+};
+canvas.addEventListener("mousemove", (ev) => {
+  mouse.x = ev.x;
+  mouse.y = ev.y;
+  mouse.click = ev.buttons == 1;
+});
+
+canvas.addEventListener("mousedown", (ev) => {
+  mouse.click = ev.buttons == 1;
+});
+
+canvas.addEventListener("mouseup", (ev) => {
+  mouse.click = ev.buttons == 1;
+});
+
 type particle = {
   x: number;
   y: number;
@@ -10,6 +29,7 @@ type particle = {
 };
 
 const particles: particle[] = [];
+var frame = 0;
 
 ctx.fillStyle = "blue";
 
@@ -56,6 +76,8 @@ const animationLoop = () => {
 
     // If particle is too small, delete
     if (particles[p].radius <= 0) delete particles[p];
+
+    frame += 1;
   }
 };
 
