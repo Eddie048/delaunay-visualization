@@ -1,5 +1,16 @@
 const canvas = <HTMLCanvasElement> document.getElementById("canvas");
 const ctx = <CanvasRenderingContext2D> canvas.getContext("2d");
 
-ctx.font = "30px Arial";
-ctx.fillText("Hello, World!", 10, 30);
+
+var x = 0;
+const animationLoop = () => {
+  window.requestAnimationFrame(animationLoop);
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+  ctx.fillStyle = "blue";
+  ctx.fillRect(x, 100, 200, 100);
+  x += 5;
+  if (x > canvas.width) x = -200;
+}
+
+window.requestAnimationFrame(animationLoop);
