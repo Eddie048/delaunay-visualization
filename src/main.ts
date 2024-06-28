@@ -1,25 +1,6 @@
 const canvas = <HTMLCanvasElement>document.getElementById("canvas");
 const ctx = <CanvasRenderingContext2D>canvas.getContext("2d");
 
-const mouse = {
-  x: 0,
-  y: 0,
-  click: false,
-};
-canvas.addEventListener("mousemove", (ev) => {
-  mouse.x = ev.offsetX;
-  mouse.y = ev.offsetY;
-  mouse.click = ev.buttons == 1;
-});
-
-canvas.addEventListener("mousedown", (ev) => {
-  mouse.click = ev.buttons == 1;
-});
-
-canvas.addEventListener("mouseup", (ev) => {
-  mouse.click = ev.buttons == 1;
-});
-
 type particle = {
   x: number;
   y: number;
@@ -37,13 +18,6 @@ const animationLoop = () => {
 
   // Clear screen
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Draw mouse dot
-  ctx.fillStyle = "red";
-  ctx.beginPath();
-  ctx.arc(mouse.x, mouse.y, 10, 0, Math.PI * 2);
-  ctx.closePath();
-  ctx.fill();
 
   // Create new particle
   particles.push({
@@ -68,17 +42,6 @@ const animationLoop = () => {
     );
     ctx.closePath();
     ctx.fill();
-
-    // Particles are scared of the mouse
-    if (
-      Math.sqrt(
-        Math.pow(particles[p].x - mouse.x, 2) +
-          Math.pow(particles[p].y - mouse.y, 2)
-      ) < 100
-    ) {
-      particles[p].x += (particles[p].x - mouse.x) / 30;
-      particles[p].y += (particles[p].y - mouse.y) / 30;
-    }
 
     // Update x, y, and radius
     particles[p].y += particles[p].yVelocity;
