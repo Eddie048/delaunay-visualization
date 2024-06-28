@@ -6,21 +6,22 @@ type point = {
   y: number;
 };
 
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 // Points Array
 const points: point[] = [];
 
-var frame = 0;
-
-const animationLoop = () => {
+const animationLoop = async () => {
   // Clear screen
   // ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Create new point every once in a while
-  if (frame % 50 == 0)
-    points.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-    });
+  points.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+  });
 
   c.fillStyle = "black";
 
@@ -42,11 +43,8 @@ const animationLoop = () => {
     }
   }
 
-  // Draw lines between all points
-  // for ()
-
   // Recursive
-  frame += 1;
+  await sleep(1000);
   window.requestAnimationFrame(animationLoop);
 };
 
