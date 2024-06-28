@@ -1,5 +1,5 @@
 const canvas = <HTMLCanvasElement>document.getElementById("canvas");
-const ctx = <CanvasRenderingContext2D>canvas.getContext("2d");
+const c = <CanvasRenderingContext2D>canvas.getContext("2d");
 
 type point = {
   x: number;
@@ -22,15 +22,28 @@ const animationLoop = () => {
       y: Math.random() * canvas.height,
     });
 
-  ctx.fillStyle = "black";
+  c.fillStyle = "black";
 
-  for (let p in points) {
-    // Draw point
-    ctx.beginPath();
-    ctx.arc(points[p].x, points[p].y, 5, 0, Math.PI * 2);
-    ctx.closePath();
-    ctx.fill();
+  // Draw all points
+  for (let point of points) {
+    c.beginPath();
+    c.arc(point.x, point.y, 3, 0, Math.PI * 2);
+    c.closePath();
+    c.fill();
+
+    // Draw line between all points
+    for (let other of points) {
+      if (point == other) continue;
+
+      c.beginPath();
+      c.moveTo(point.x, point.y);
+      c.lineTo(other.x, other.y);
+      c.stroke();
+    }
   }
+
+  // Draw lines between all points
+  // for ()
 
   // Recursive
   frame += 1;
