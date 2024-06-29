@@ -1,4 +1,10 @@
-import { isPointInCircumcircle, point, triangle } from "./utils";
+import { drawCircle, drawPoint, drawTriangle } from "./draw";
+import {
+  getCircumcenter,
+  isPointInCircumcircle,
+  point,
+  triangle,
+} from "./utils";
 
 const canvas = <HTMLCanvasElement>document.getElementById("canvas");
 const c = <CanvasRenderingContext2D>canvas.getContext("2d");
@@ -22,10 +28,25 @@ let p4 = { x: canvas.width, y: canvas.height };
 points.push(p1, p2, p3, p4);
 triangles.push([p1, p2, p3], [p2, p3, p4]);
 
-const animationLoop = async () => {
+const reDraw = () => {
+  c.fillStyle = "black";
+  c.strokeStyle = "black";
+
   // Clear screen
   c.clearRect(0, 0, canvas.width, canvas.height);
 
+  // Draw all points
+  for (let point of points) {
+    drawPoint(c, point, "black");
+  }
+
+  // Draw all triangles
+  for (let triangle of triangles) {
+    drawTriangle(c, triangle, "black");
+  }
+};
+
+const animationLoop = async () => {
   // Create new point
   let newPoint = {
     x: Math.random() * canvas.width,
@@ -33,18 +54,54 @@ const animationLoop = async () => {
   };
   points.push(newPoint);
 
+  // Draw new point
+  drawPoint(c, newPoint, "blue");
+  await sleep(1000);
+
   // Find any triangles whos circumcircles contain the new point
   let badTriangles: { triangle: triangle; index: number }[] = [];
   for (let i = 0; i < triangles.length; i++) {
-    if (isPointInCircumcircle(triangles[i], newPoint)) {
+    let isInside = isPointInCircumcircle(triangles[i], newPoint);
+
+    // Draw circumcircle
+    let circumcenter = getCircumcenter(triangles[i]);
+    drawCircle(
+      c,
+      circumcenter.x,
+      circumcenter.y,
+      Math.sqrt(
+        Math.pow(circumcenter.x - triangles[i][0].x, 2) +
+          Math.pow(circumcenter.y - triangles[i][0].y, 2)
+      ),
+      isInside ? "red" : "green"
+    );
+
+    // Show circumcircles
+    await sleep(100);
+
+    if (isInside) {
       // Add bad triangle to array, delete it from triangles array and fix the index
       badTriangles.push({ triangle: triangles[i], index: i });
       triangles.splice(i, 1);
       i -= 1;
     }
   }
+  await sleep(1000);
 
-  // find outside edge of hole
+  // Show bad triangles
+  reDraw();
+  for (let triangle of badTriangles) {
+    drawTriangle(c, triangle.triangle, "red");
+  }
+  drawPoint(c, newPoint, "blue");
+  await sleep(1000);
+
+  // Show bad triangles deleted
+  reDraw();
+  drawPoint(c, newPoint, "blue");
+  await sleep(1000);
+
+  // Find outside edge of hole
   let outsideEdges: [point, point][] = [];
   for (let triangle of badTriangles) {
     // Loop through this triangle's sides
@@ -80,29 +137,15 @@ const animationLoop = async () => {
     }
   }
 
+  // Add new triangles back
   for (let edge of outsideEdges) {
     triangles.push([edge[0], edge[1], newPoint]);
+    reDraw();
+    await sleep(100);
   }
 
-  c.fillStyle = "black";
-
-  // Draw all points
-  for (let point of points) {
-    c.beginPath();
-    c.arc(point.x, point.y, 3, 0, Math.PI * 2);
-    c.closePath();
-    c.fill();
-  }
-
-  // Draw all triangles
-  for (let triangle of triangles) {
-    for (let i = 0; i < triangle.length; i++) {
-      c.beginPath();
-      c.moveTo(triangle[i].x, triangle[i].y);
-      c.lineTo(triangle[(i + 1) % 3].x, triangle[(i + 1) % 3].y);
-      c.stroke();
-    }
-  }
+  // Draw
+  reDraw();
 
   // Recursive
   await sleep(1000);
