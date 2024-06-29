@@ -69,10 +69,10 @@ const sign = (p1: point, p2: point, p3: point) => {
   return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y) < 0;
 };
 
-const isPointInTriangle = (pt: point, vertices: triangle) => {
-  let b1 = sign(pt, vertices[0], vertices[1]);
-  let b2 = sign(pt, vertices[1], vertices[2]);
-  let b3 = sign(pt, vertices[2], vertices[0]);
+const isPointInTriangle = (vertices: triangle, toTest: point) => {
+  let b1 = sign(toTest, vertices[0], vertices[1]);
+  let b2 = sign(toTest, vertices[1], vertices[2]);
+  let b3 = sign(toTest, vertices[2], vertices[0]);
   return b1 == b2 && b2 == b3;
 };
 
