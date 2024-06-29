@@ -48,59 +48,74 @@ const animationLoop = async () => {
 // Start animation loop
 // window.requestAnimationFrame(animationLoop);
 
-c.fillStyle = "black";
+while (true) {
+  // Clear screen
+  c.clearRect(0, 0, canvas.width, canvas.height);
 
-// Generate and draw 3 points and the lines between them
-for (let i = 0; i < 3; i++) {
-  const newPoint: point = {
+  // Set fill style
+  c.fillStyle = "black";
+  c.strokeStyle = "black";
+  c.lineWidth = 2;
+
+  // Vertices
+  const vertices: point[] = [];
+
+  // Generate and draw 3 vertices and the lines between them
+  for (let i = 0; i < 3; i++) {
+    const newPoint: point = {
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+    };
+
+    vertices.push(newPoint);
+
+    // Draw vertices
+    c.beginPath();
+    c.arc(newPoint.x, newPoint.y, 4, 0, Math.PI * 2);
+    c.closePath();
+    c.fill();
+
+    // Draw line between all vertices
+    for (let other of vertices) {
+      if (newPoint == other) continue;
+
+      c.beginPath();
+      c.moveTo(newPoint.x, newPoint.y);
+      c.lineTo(other.x, other.y);
+      c.stroke();
+    }
+
+    await sleep(500);
+  }
+
+  // Generate new point
+  const testPoint: point = {
     x: Math.random() * canvas.width,
     y: Math.random() * canvas.height,
   };
 
-  points.push(newPoint);
-
-  // Draw points
+  // Draw new point
+  c.fillStyle = "blue";
   c.beginPath();
-  c.arc(newPoint.x, newPoint.y, 3, 0, Math.PI * 2);
+  c.arc(testPoint.x, testPoint.y, 4, 0, Math.PI * 2);
   c.closePath();
   c.fill();
 
-  // Draw line between all points
-  for (let other of points) {
-    if (newPoint == other) continue;
+  await sleep(500);
 
-    c.beginPath();
-    c.moveTo(newPoint.x, newPoint.y);
-    c.lineTo(other.x, other.y);
-    c.stroke();
-  }
+  // Draw circumcircle
+  let circumcenter = getCircumcenter(vertices);
+  let radius = Math.sqrt(
+    Math.pow(circumcenter.x - vertices[0].x, 2) +
+      Math.pow(circumcenter.y - vertices[0].y, 2)
+  );
+
+  c.strokeStyle = isInsideCircumcircle(vertices, testPoint) ? "green" : "red";
+
+  c.beginPath();
+  c.arc(circumcenter.x, circumcenter.y, radius, 0, Math.PI * 2);
+  c.closePath();
+  c.stroke();
 
   await sleep(1000);
 }
-
-// Draw circumcircle
-let circumcenter = getCircumcenter(points);
-let radius = Math.sqrt(
-  Math.pow(circumcenter.x - points[0].x, 2) +
-    Math.pow(circumcenter.y - points[0].y, 2)
-);
-c.beginPath();
-c.arc(circumcenter.x, circumcenter.y, radius, 0, Math.PI * 2);
-c.closePath();
-c.stroke();
-
-// Generate new point
-const testPoint: point = {
-  x: Math.random() * canvas.width,
-  y: Math.random() * canvas.height,
-};
-
-// Draw new point
-c.fillStyle = "red";
-c.beginPath();
-c.arc(testPoint.x, testPoint.y, 3, 0, Math.PI * 2);
-c.closePath();
-c.fill();
-
-// Log if inside or outside circumcircle
-console.log(isInsideCircumcircle(points, testPoint));
