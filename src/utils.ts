@@ -9,9 +9,6 @@ type triangle = [point, point, point];
 
 // Determine if 3 points are arranged clockwise or counterclockwise
 const isCounterClockwise = (vertices: triangle) => {
-  // Ensure 3 verticies
-  if (vertices.length != 3) throw "getCircumcenter takes in 3 vertices exactly";
-
   const matrix: number[][] = [];
 
   for (let point of vertices) {
@@ -41,9 +38,6 @@ const isPointInCircumcircle = (vertices: triangle, toTest: point) => {
 
 // Get the circumcenter of 3 points
 const getCircumcenter = (vertices: triangle) => {
-  // Ensure 3 verticies
-  if (vertices.length != 3) throw "getCircumcenter takes in 3 vertices exactly";
-
   // Pretend vertices[0] is at 0, 0 to simplify equations
   let b: point = {
     x: vertices[1].x - vertices[0].x,

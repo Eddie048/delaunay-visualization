@@ -1,4 +1,4 @@
-import { isPointInTriangle, point, triangle } from "./utils";
+import { isPointInCircumcircle, point, triangle } from "./utils";
 
 const canvas = <HTMLCanvasElement>document.getElementById("canvas");
 const c = <CanvasRenderingContext2D>canvas.getContext("2d");
@@ -20,7 +20,7 @@ let p3 = { x: canvas.width, y: 0 };
 let p4 = { x: canvas.width, y: canvas.height };
 
 points.push(p1, p2, p3, p4);
-triangles.push([p1, p2, p3], [p2, p3, p4]);
+triangles.push([p1, p2, p3], [p2, p4, p3]);
 
 const animationLoop = async () => {
   // Clear screen
@@ -33,22 +33,55 @@ const animationLoop = async () => {
   };
   points.push(newPoint);
 
-  // Check which triangle new point is inside
+  // Find any triangles whos circumcircles contain the new point
+  let badTriangles: { triangle: triangle; index: number }[] = [];
   for (let i = 0; i < triangles.length; i++) {
-    if (isPointInTriangle(triangles[i], newPoint)) {
-      // Split triangle into 3 new triangles
-      triangles.push(
-        [newPoint, triangles[i][0], triangles[i][1]],
-        [newPoint, triangles[i][1], triangles[i][2]],
-        [newPoint, triangles[i][2], triangles[i][0]]
-      );
-
-      // Remove old triangle
+    if (isPointInCircumcircle(triangles[i], newPoint)) {
+      // Add bad triangle to array, delete it from triangles array and fix the index
+      badTriangles.push({ triangle: triangles[i], index: i });
       triangles.splice(i, 1);
-
-      // Exit loop
-      break;
+      i -= 1;
     }
+  }
+
+  // find outside edge of hole
+  let outsideEdges: [point, point][] = [];
+  for (let triangle of badTriangles) {
+    // Loop through this triangle's sides
+    for (let i = 0; i < 3; i += 1) {
+      // Check if this edge is in any other triangle
+      let uniqueEdge = true;
+
+      for (let other of badTriangles) {
+        if (other == triangle) continue;
+
+        // Loop through otherTriangle's sides
+        for (let j = 0; j < 3; j += 1) {
+          if (
+            (triangle.triangle[i] == other.triangle[j] &&
+              triangle.triangle[(i + 1) % 3] == other.triangle[(j + 1) % 3]) ||
+            (triangle.triangle[i] == other.triangle[(j + 1) % 3] &&
+              triangle.triangle[(i + 1) % 3] == other.triangle[j])
+          ) {
+            uniqueEdge = false;
+            break;
+          }
+        }
+        if (!uniqueEdge) break;
+      }
+
+      // If this was a unique edge, add it to the unique edges array
+      if (uniqueEdge) {
+        outsideEdges.push([
+          triangle.triangle[i],
+          triangle.triangle[(i + 1) % 3],
+        ]);
+      }
+    }
+  }
+
+  for (let edge of outsideEdges) {
+    triangles.push([edge[0], edge[1], newPoint]);
   }
 
   c.fillStyle = "black";
