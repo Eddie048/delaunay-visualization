@@ -59,7 +59,7 @@ const animationLoop = async () => {
   await sleep(1000);
 
   // Find any triangles whos circumcircles contain the new point
-  let badTriangles: { triangle: triangle; index: number }[] = [];
+  let badTriangles: triangle[] = [];
   for (let i = 0; i < triangles.length; i++) {
     let isInside = isPointInCircumcircle(triangles[i], newPoint);
 
@@ -81,7 +81,7 @@ const animationLoop = async () => {
 
     if (isInside) {
       // Add bad triangle to array, delete it from triangles array and fix the index
-      badTriangles.push({ triangle: triangles[i], index: i });
+      badTriangles.push(triangles[i]);
       triangles.splice(i, 1);
       i -= 1;
     }
@@ -91,7 +91,7 @@ const animationLoop = async () => {
   // Show bad triangles
   reDraw();
   for (let triangle of badTriangles) {
-    drawTriangle(c, triangle.triangle, "red");
+    drawTriangle(c, triangle, "red");
   }
   drawPoint(c, newPoint, "blue");
   await sleep(1000);
@@ -115,10 +115,10 @@ const animationLoop = async () => {
         // Loop through otherTriangle's sides
         for (let j = 0; j < 3; j += 1) {
           if (
-            (triangle.triangle[i] == other.triangle[j] &&
-              triangle.triangle[(i + 1) % 3] == other.triangle[(j + 1) % 3]) ||
-            (triangle.triangle[i] == other.triangle[(j + 1) % 3] &&
-              triangle.triangle[(i + 1) % 3] == other.triangle[j])
+            (triangle[i] == other[j] &&
+              triangle[(i + 1) % 3] == other[(j + 1) % 3]) ||
+            (triangle[i] == other[(j + 1) % 3] &&
+              triangle[(i + 1) % 3] == other[j])
           ) {
             uniqueEdge = false;
             break;
@@ -129,10 +129,7 @@ const animationLoop = async () => {
 
       // If this was a unique edge, add it to the unique edges array
       if (uniqueEdge) {
-        outsideEdges.push([
-          triangle.triangle[i],
-          triangle.triangle[(i + 1) % 3],
-        ]);
+        outsideEdges.push([triangle[i], triangle[(i + 1) % 3]]);
       }
     }
   }
