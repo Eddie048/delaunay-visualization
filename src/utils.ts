@@ -5,8 +5,10 @@ type point = {
   y: number;
 };
 
+type triangle = [point, point, point];
+
 // Determine if 3 points are arranged clockwise or counterclockwise
-const isCounterClockwise = (vertices: point[]) => {
+const isCounterClockwise = (vertices: triangle) => {
   // Ensure 3 verticies
   if (vertices.length != 3) throw "getCircumcenter takes in 3 vertices exactly";
 
@@ -20,10 +22,8 @@ const isCounterClockwise = (vertices: point[]) => {
 };
 
 // Determine if a test point is within the circumcircle described by 3 other points
-const isInsideCircumcircle = (vertices: point[], toTest: point) => {
-  // Ensure 3 verticies
-  if (vertices.length != 3) throw "getCircumcenter takes in 3 vertices exactly";
-
+const isPointInCircumcircle = (vertices: triangle, toTest: point) => {
+  // Get direction of triangle
   let direction = isCounterClockwise(vertices);
 
   const matrix: number[][] = [];
@@ -40,7 +40,7 @@ const isInsideCircumcircle = (vertices: point[], toTest: point) => {
 };
 
 // Get the circumcenter of 3 points
-const getCircumcenter = (vertices: point[]) => {
+const getCircumcenter = (vertices: triangle) => {
   // Ensure 3 verticies
   if (vertices.length != 3) throw "getCircumcenter takes in 3 vertices exactly";
 
@@ -64,4 +64,22 @@ const getCircumcenter = (vertices: point[]) => {
   return center;
 };
 
-export { type point, isInsideCircumcircle, getCircumcenter };
+// Get which side of a line a point is on
+const sign = (p1: point, p2: point, p3: point) => {
+  return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y) < 0;
+};
+
+const isPointInTriangle = (pt: point, vertices: triangle) => {
+  let b1 = sign(pt, vertices[0], vertices[1]);
+  let b2 = sign(pt, vertices[1], vertices[2]);
+  let b3 = sign(pt, vertices[2], vertices[0]);
+  return b1 == b2 && b2 == b3;
+};
+
+export {
+  type point,
+  type triangle,
+  isPointInCircumcircle,
+  getCircumcenter,
+  isPointInTriangle,
+};
