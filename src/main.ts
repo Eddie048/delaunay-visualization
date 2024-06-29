@@ -25,7 +25,6 @@ let p2 = { x: 0, y: canvas.height };
 let p3 = { x: canvas.width, y: 0 };
 let p4 = { x: canvas.width, y: canvas.height };
 
-points.push(p1, p2, p3, p4);
 triangles.push([p1, p2, p3], [p2, p3, p4]);
 
 const reDraw = () => {
