@@ -11,7 +11,7 @@ const printMatrix = (matrix: number[][]) => {
 };
 
 // Assume this is a square matrix
-export const determinant = (matrix: number[][]) => {
+const determinant = (matrix: number[][]) => {
   if (matrix.length == 1) return matrix[0][0];
   else if (matrix.length == 2)
     return matrix[0][0] * matrix[1][1] - matrix[1][0] * matrix[0][1];
@@ -33,7 +33,6 @@ export const determinant = (matrix: number[][]) => {
         for (let col = diagonalIndex + 1; col < matrix.length; col++) {
           matrix[row][col] += factor * matrix[diagonalIndex][col];
         }
-        printMatrix(matrix);
       }
     }
 
@@ -49,3 +48,5 @@ export const determinant = (matrix: number[][]) => {
     return determinant;
   }
 };
+
+export { printMatrix, determinant };
