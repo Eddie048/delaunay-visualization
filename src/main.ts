@@ -1,12 +1,7 @@
-import { determinant } from "./matrix";
+import { isInsideCircumcircle, point } from "./utils";
 
 const canvas = <HTMLCanvasElement>document.getElementById("canvas");
 const c = <CanvasRenderingContext2D>canvas.getContext("2d");
-
-type point = {
-  x: number;
-  y: number;
-};
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -96,14 +91,4 @@ c.arc(testPoint.x, testPoint.y, 3, 0, Math.PI * 2);
 c.closePath();
 c.fill();
 
-// Calculate matrix
-const matrix = [];
-for (let point of points) {
-  matrix.push([
-    point.x - testPoint.x,
-    point.y - testPoint.y,
-    Math.pow(point.x - testPoint.x, 2) + Math.pow(point.y - testPoint.y, 2),
-  ]);
-}
-
-console.log(determinant(matrix));
+console.log(isInsideCircumcircle(points, testPoint));
