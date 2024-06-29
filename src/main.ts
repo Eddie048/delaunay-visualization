@@ -1,4 +1,4 @@
-import { isInsideCircumcircle, point } from "./utils";
+import { getCircumcenter, isInsideCircumcircle, point } from "./utils";
 
 const canvas = <HTMLCanvasElement>document.getElementById("canvas");
 const c = <CanvasRenderingContext2D>canvas.getContext("2d");
@@ -78,6 +78,17 @@ for (let i = 0; i < 3; i++) {
   await sleep(1000);
 }
 
+// Draw circumcircle
+let circumcenter = getCircumcenter(points);
+let radius = Math.sqrt(
+  Math.pow(circumcenter.x - points[0].x, 2) +
+    Math.pow(circumcenter.y - points[0].y, 2)
+);
+c.beginPath();
+c.arc(circumcenter.x, circumcenter.y, radius, 0, Math.PI * 2);
+c.closePath();
+c.stroke();
+
 // Generate new point
 const testPoint: point = {
   x: Math.random() * canvas.width,
@@ -91,4 +102,5 @@ c.arc(testPoint.x, testPoint.y, 3, 0, Math.PI * 2);
 c.closePath();
 c.fill();
 
+// Log if inside or outside circumcircle
 console.log(isInsideCircumcircle(points, testPoint));
