@@ -13,6 +13,24 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// True if showing full animation, false otherwise
+var isAnimating = false;
+
+// Add event listener to button
+const animationButton = <HTMLButtonElement>document.getElementById("animation");
+animationButton.onclick = () => {
+  if (isAnimating) {
+    animationButton.style.boxShadow = "none";
+    animationButton.style.backgroundColor = "#888";
+    animationButton.style.color = "#000";
+  } else {
+    animationButton.style.boxShadow = "#888 3px 3px";
+    animationButton.style.backgroundColor = "#333";
+    animationButton.style.color = "#fff";
+  }
+  isAnimating = !isAnimating;
+};
+
 // Points Array
 const points: point[] = [];
 
@@ -53,30 +71,32 @@ const animationLoop = async () => {
   };
   points.push(newPoint);
 
-  // Draw new point
-  drawPoint(c, newPoint, "blue");
-  await sleep(1000);
+  if (isAnimating) {
+    // Draw and show new point
+    drawPoint(c, newPoint, "blue");
+    await sleep(1000);
+  }
 
   // Find any triangles whos circumcircles contain the new point
   let badTriangles: triangle[] = [];
   for (let i = 0; i < triangles.length; i++) {
     let isInside = isPointInCircumcircle(triangles[i], newPoint);
 
-    // Draw circumcircle
-    let circumcenter = getCircumcenter(triangles[i]);
-    drawCircle(
-      c,
-      circumcenter.x,
-      circumcenter.y,
-      Math.sqrt(
-        Math.pow(circumcenter.x - triangles[i][0].x, 2) +
-          Math.pow(circumcenter.y - triangles[i][0].y, 2)
-      ),
-      isInside ? "red" : "green"
-    );
-
-    // Show circumcircles
-    await sleep(100);
+    if (isAnimating) {
+      // Draw and show circumcircle
+      let circumcenter = getCircumcenter(triangles[i]);
+      drawCircle(
+        c,
+        circumcenter.x,
+        circumcenter.y,
+        Math.sqrt(
+          Math.pow(circumcenter.x - triangles[i][0].x, 2) +
+            Math.pow(circumcenter.y - triangles[i][0].y, 2)
+        ),
+        isInside ? "red" : "green"
+      );
+      await sleep(100);
+    }
 
     if (isInside) {
       // Add bad triangle to array, delete it from triangles array and fix the index
@@ -85,20 +105,24 @@ const animationLoop = async () => {
       i -= 1;
     }
   }
-  await sleep(1000);
 
-  // Show bad triangles
-  reDraw();
-  for (let triangle of badTriangles) {
-    drawTriangle(c, triangle, "red");
+  if (isAnimating) {
+    // Show all circumcircles
+    await sleep(1000);
+
+    // Show bad triangles
+    reDraw();
+    for (let triangle of badTriangles) {
+      drawTriangle(c, triangle, "red");
+    }
+    drawPoint(c, newPoint, "blue");
+    await sleep(1000);
+
+    // Show bad triangles deleted
+    reDraw();
+    drawPoint(c, newPoint, "blue");
+    await sleep(1000);
   }
-  drawPoint(c, newPoint, "blue");
-  await sleep(1000);
-
-  // Show bad triangles deleted
-  reDraw();
-  drawPoint(c, newPoint, "blue");
-  await sleep(1000);
 
   // Find outside edge of hole
   let outsideEdges: [point, point][] = [];
@@ -136,8 +160,12 @@ const animationLoop = async () => {
   // Add new triangles back
   for (let edge of outsideEdges) {
     triangles.push([edge[0], edge[1], newPoint]);
-    reDraw();
-    await sleep(100);
+
+    if (isAnimating) {
+      // Show each triangle being added
+      reDraw();
+      await sleep(100);
+    }
   }
 
   // Draw

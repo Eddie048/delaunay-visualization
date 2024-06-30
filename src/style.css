@@ -10,6 +10,16 @@ body {
   justify-content: center;
   align-items: center;
   display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#animation {
+  padding: 10px;
+  border-radius: 6px;
+  font-size: larger;
+  background-color: #888;
+  color: #000;
 }
 
 #canvas {
